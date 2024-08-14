@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera Stream</title>
+  <style>
+    body { margin: 0; padding: 0; background: #000; display: flex; justify-content: center; align-items: center; flex-direction: column; height: 100vh;}
+    video { width: 100%; height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <video autoplay class="camera" id="camera" style="float:left"></video>
+  <button id="stopButton">Arrêter la caméra</button>
+
+  <script>
+    var camera = document.getElementById('camera');
+    var stopButton = document.getElementById('stopButton');
+    var stream;
+
+    var constraints = {
+      audio: false,
+      video: true
+    };
+
+    function successCallback(mediaStream) {
+      stream = mediaStream;
+      camera.srcObject = stream;
+    }
+
+    function errorCallback(error) {
+      console.log('navigator.getUserMedia error: ', error);
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then(successCallback)
+      .catch(errorCallback);
+
+    stopButton.addEventListener('click', function() {
+      if (stream) {
+        let tracks = stream.getTracks();
+        tracks.forEach(track => track.stop());
+        camera.srcObject = null;
+      }
+    });
+  </script>
+</body>
+</html>
